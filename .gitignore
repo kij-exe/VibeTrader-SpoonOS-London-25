@@ -40,3 +40,5 @@ htmlcov/
 
 # Misc
 *.cache
+
+# llm.txt
