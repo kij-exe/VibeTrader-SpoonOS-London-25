@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+*.tmp
+*.log
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# FastAPI / Uvicorn
+*.sqlite3
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Logs
+logs/
+*.log
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Coverage / Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Misc
+*.cache
