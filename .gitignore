@@ -43,3 +43,21 @@ htmlcov/
 
 # llm.txt
 .env
+
+# =============================================================================
+# Backtesting Module
+# =============================================================================
+# Data storage (large files fetched from Binance)
+backtesting/data_storage/raw/
+backtesting/data_storage/lean/crypto/
+
+# Keep Lean config files (required for backtesting)
+!backtesting/data_storage/lean/market-hours/
+!backtesting/data_storage/lean/symbol-properties/
+
+# Backtest results (generated output)
+backtesting/results/
+
+# Generated strategy files (patched copies with 8-char hex hash like default_rsi_ea58656c.py)
+# Pattern: any name ending with _[8 hex chars].py
+backtesting/strategies/*_[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].py
