@@ -142,9 +142,10 @@ class LeanRunner:
         strategy_name = backtest_config.strategy_file.stem
         
         # Create temporary working directory
-        with tempfile.TemporaryDirectory() as temp_dir:
-            work_dir = Path(temp_dir)
-            
+        temp_dir = tempfile.mkdtemp()
+        work_dir = Path(temp_dir)
+        
+        try:
             # Copy strategy file
             strategy_dest = work_dir / backtest_config.strategy_file.name
             shutil.copy(backtest_config.strategy_file, strategy_dest)
@@ -225,6 +226,12 @@ class LeanRunner:
                     duration_seconds=(datetime.now() - start_time).total_seconds(),
                     error_message=str(e),
                 )
+        finally:
+            # Clean up temp directory, ignoring permission errors from Docker
+            try:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            except Exception as e:
+                logger.debug(f"Failed to clean up temp directory {temp_dir}: {e}")
     
     def _parse_results(
         self,

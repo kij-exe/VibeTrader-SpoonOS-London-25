@@ -77,10 +77,10 @@ async def websocket_endpoint(websocket: WebSocket):
     # Start the consumer loop
     await agent.start()
     
-    # Send welcome message
-    await manager.send_message(client_id, "Welcome to VibeTrader! Describe your portfolio management strategy and I'll help you build it.")
-    
     try:
+        # Send welcome message
+        await manager.send_message(client_id, "Welcome to VibeTrader! Describe your portfolio management strategy and I'll help you build it.")
+        
         while True:
             # Receive message from client
             data = await websocket.receive_json()

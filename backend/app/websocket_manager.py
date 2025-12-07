@@ -50,11 +50,16 @@ class ConnectionManager:
         """
         if client_id in self.active_connections:
             websocket = self.active_connections[client_id]
-            await websocket.send_json({
-                "type": "message",
-                "content": message
-            })
-            logger.debug(f"Sent message to {client_id}: {message}")
+            try:
+                await websocket.send_json({
+                    "type": "message",
+                    "content": message
+                })
+                logger.debug(f"Sent message to {client_id}: {message}")
+            except Exception as e:
+                logger.warning(f"Failed to send message to {client_id}: {e}")
+                # Client likely disconnected, remove from active connections
+                self.disconnect(client_id)
 
     async def broadcast(self, message: str) -> None:
         """
@@ -63,9 +68,19 @@ class ConnectionManager:
         Args:
             message: The message to broadcast
         """
-        for client_id, websocket in self.active_connections.items():
-            await websocket.send_json({
-                "type": "message",
-                "content": message
-            })
+        disconnected = []
+        for client_id, websocket in list(self.active_connections.items()):
+            try:
+                await websocket.send_json({
+                    "type": "message",
+                    "content": message
+                })
+            except Exception as e:
+                logger.warning(f"Failed to broadcast to {client_id}: {e}")
+                disconnected.append(client_id)
+        
+        # Remove disconnected clients
+        for client_id in disconnected:
+            self.disconnect(client_id)
+        
         logger.debug(f"Broadcast message to {len(self.active_connections)} clients: {message}")
