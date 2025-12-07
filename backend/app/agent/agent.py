@@ -213,10 +213,10 @@ async def _entry_node(state: Dict[str, Any]) -> Dict[str, Any]:
         for msg in messages
     ])
 
-    # Use ChatBot with anthropic Haiku for requirement analysis
+    # Use ChatBot with OpenAI GPT-5.1 for requirement analysis
     bot = ChatBot(
-        llm_provider="anthropic",
-        model_name="claude-haiku-4-5-20251001",
+        llm_provider="openai",
+        model_name="gpt-5.1-2025-11-13",
     )
 
     analysis_messages = [
@@ -227,7 +227,7 @@ async def _entry_node(state: Dict[str, Any]) -> Dict[str, Any]:
                 "Analyze if the user has provided a complete trading strategy description.\n"
                 "REQUIRED: entry_conditions (buy signals), exit_conditions (sell signals).\n"
                 "OPTIONAL: symbol (default BTCUSDT), timeframe (default 1h), risk (default moderate), start_date (default 2025-01-01), end_date (default 2025-06-30).\n\n"
-                "TIMEFRAME VALIDATION: Only these are valid: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M.\n"
+                "TIMEFRAME VALIDATION: Only these are valid: 1m, 1h, 1d.\n"
                 "If user specifies invalid timeframe (like 1.5h, 90m), suggest the closest valid one (e.g., 1.5h -> 1h or 2h).\n\n"
                 "If user describes a strategy but doesn't specify a trading pair, that's OK - we'll use BTCUSDT.\n"
                 "If user specifies a pair but it seems invalid (like BTCUSDC, XAUUSD), suggest BTCUSDT instead.\n"
@@ -348,7 +348,7 @@ async def _clarify_requirements_node(state: Dict[str, Any]) -> Dict[str, Any]:
         current_timeframe = strategy_spec.get("timeframe", "unknown")
         question = (
             f"⚠️ The timeframe '{current_timeframe}' is not valid.\n\n"
-            f"Valid timeframes: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M\n\n"
+            f"Valid timeframes: 1m, 1h, 1d\n\n"
             "Please specify a valid timeframe (e.g., '1h' for hourly, '1d' for daily)."
         )
         logger.info("📝 Asking user for valid timeframe (current: %s)", current_timeframe)

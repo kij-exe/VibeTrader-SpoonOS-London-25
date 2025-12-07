@@ -350,38 +350,38 @@ class BacktestingAgent:
         # Validate and get Lean resolution
         lean_resolution = self._validate_interval(request.interval)
         
-        # Patch symbol and resolution: replace add_crypto("XXXUSDT", Resolution.XXX)
+        # Patch symbol and resolution: replace AddCrypto/add_crypto("XXXUSDT", Resolution.XXX)
         content = re.sub(
-            r'add_crypto\(["\']([A-Z]+USDT)["\'],\s*Resolution\.\w+\)',
-            f'add_crypto("{request.symbol}", Resolution.{lean_resolution})',
+            r'[Aa]dd_?[Cc]rypto\(["\']([A-Z]+USDT)["\'],\s*Resolution\.\w+\)',
+            f'AddCrypto("{request.symbol}", Resolution.{lean_resolution})',
             content
         )
         
-        # Patch start date: replace set_start_date(YYYY, M, D) 
+        # Patch start date: replace SetStartDate or set_start_date(YYYY, M, D) 
         content = re.sub(
-            r'set_start_date\(\d+,\s*\d+,\s*\d+\)',
-            f'set_start_date({request.start_date.year}, {request.start_date.month}, {request.start_date.day})',
+            r'[Ss]et_?[Ss]tart_?[Dd]ate\(\d+,\s*\d+,\s*\d+\)',
+            f'SetStartDate({request.start_date.year}, {request.start_date.month}, {request.start_date.day})',
             content
         )
         
-        # Patch end date: replace set_end_date(YYYY, M, D)
+        # Patch end date: replace SetEndDate or set_end_date(YYYY, M, D)
         content = re.sub(
-            r'set_end_date\(\d+,\s*\d+,\s*\d+\)',
-            f'set_end_date({request.end_date.year}, {request.end_date.month}, {request.end_date.day})',
+            r'[Ss]et_?[Ee]nd_?[Dd]ate\(\d+,\s*\d+,\s*\d+\)',
+            f'SetEndDate({request.end_date.year}, {request.end_date.month}, {request.end_date.day})',
             content
         )
         
-        # Patch initial capital: replace set_cash("USDT", XXXXX, 
+        # Patch initial capital: replace SetCash/set_cash("USDT", XXXXX, 
         content = re.sub(
-            r'set_cash\(["\']USDT["\'],\s*\d+',
-            f'set_cash("USDT", {int(request.initial_capital)}',
+            r'[Ss]et_?[Cc]ash\(["\']USDT["\'],\s*\d+',
+            f'SetCash("USDT", {int(request.initial_capital)}',
             content
         )
         
-        # Patch warmup resolution: replace set_warm_up(..., Resolution.XXX)
+        # Patch warmup resolution: replace SetWarmUp/set_warm_up(..., Resolution.XXX)
         content = re.sub(
-            r'set_warm_up\(([^,]+),\s*Resolution\.\w+\)',
-            f'set_warm_up(\\1, Resolution.{lean_resolution})',
+            r'[Ss]et_?[Ww]arm_?[Uu]p\(([^,]+),\s*Resolution\.\w+\)',
+            f'SetWarmUp(\\1, Resolution.{lean_resolution})',
             content
         )
         

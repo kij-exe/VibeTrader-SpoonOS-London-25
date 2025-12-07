@@ -65,8 +65,8 @@ Be helpful, accurate, and always generate production-ready code following Lean b
         
         # Initialize LLM
         self.llm = ChatBot(
-            llm_provider="anthropic",
-            model_name="claude-sonnet-3-5-20241022"  # Latest Sonnet 3.5
+            llm_provider="openai",
+            model_name="gpt-4.1"  # GPT-4.1
         )
         
         # Create custom tools

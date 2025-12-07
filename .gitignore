@@ -12,6 +12,9 @@ __pycache__/
 venv/
 .env/
 .venv/
+spoon-env/
+spoon-env-*/
+spoon-core/
 
 # FastAPI / Uvicorn
 *.sqlite3

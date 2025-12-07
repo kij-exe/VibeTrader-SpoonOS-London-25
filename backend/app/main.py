@@ -11,7 +11,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.websocket_manager import ConnectionManager
-from app.agent.agent import StubAgent
+from app.agent.agent import VibeTraderAgent
 
 # Configure logging
 logging.basicConfig(
@@ -72,7 +72,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await manager.send_message(client_id, message)
     
     # Initialize agent for this client
-    agent = StubAgent(send_callback=send_to_client)
+    agent = VibeTraderAgent(send_callback=send_to_client)
     
     # Start the consumer loop
     await agent.start()
