@@ -1,11 +1,13 @@
-import React from 'react';
-import { User, Bot, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Bot, CheckCircle, AlertCircle, Loader2, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import CodeBlock from './CodeBlock';
+import BacktestReplay from './BacktestReplay';
 
 const ChatMessage = ({ message }) => {
   const isUser = message.sender === 'user';
   const messageType = message.messageType || 'text';
+  const [showReplay, setShowReplay] = useState(false);
 
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString('en-US', {
@@ -25,6 +27,8 @@ const ChatMessage = ({ message }) => {
         return <AlertCircle className="w-4 h-4 text-white" />;
       case 'progress':
         return <Loader2 className="w-4 h-4 text-white animate-spin" />;
+      case 'backtest_replay':
+        return <Play className="w-4 h-4 text-white" />;
       default:
         return <Bot className="w-4 h-4 text-white" />;
     }
@@ -41,6 +45,8 @@ const ChatMessage = ({ message }) => {
         return 'bg-gradient-to-br from-red-500 to-orange-500';
       case 'progress':
         return 'bg-gradient-to-br from-blue-500 to-cyan-500';
+      case 'backtest_replay':
+        return 'bg-gradient-to-br from-purple-500 to-pink-500';
       default:
         return 'bg-gradient-to-br from-emerald-500 to-cyan-500';
     }
@@ -106,11 +112,34 @@ const ChatMessage = ({ message }) => {
           </div>
         )}
 
+        {/* Backtest Replay Button */}
+        {message.backtestData && messageType === 'backtest_replay' && (
+          <button
+            onClick={() => setShowReplay(true)}
+            className="mt-3 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+          >
+            <Play className="w-5 h-5 text-white" />
+            <span className="font-medium text-white">View Order Replay</span>
+          </button>
+        )}
+
         {/* Timestamp */}
         <span className="text-xs text-dark-500 mt-1 px-1">
           {formatTime(message.timestamp)}
         </span>
       </div>
+
+      {/* Backtest Replay Overlay */}
+      {showReplay && message.backtestData && (
+        <BacktestReplay
+          backtestData={message.backtestData}
+          metadata={{
+            ...message.metadata,
+            initialCapital: 100000,
+          }}
+          onClose={() => setShowReplay(false)}
+        />
+      )}
     </div>
   );
 };

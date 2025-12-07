@@ -40,6 +40,7 @@ export const useWebSocket = () => {
               content: data.content,
               codeBlocks: data.code_blocks || null,
               metadata: data.metadata || null,
+              backtestData: data.backtest_data || null,
             };
             
             setMessages((prev) => [...prev, message]);

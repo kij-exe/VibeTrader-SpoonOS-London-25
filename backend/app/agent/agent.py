@@ -727,6 +727,52 @@ async def _compile_node(state: Dict[str, Any]) -> Dict[str, Any]:
                 f"📝 Preparing full results...",
                 prefix="")
             
+            # Find and send the results JSON for order replay visualization
+            backtest_data = None
+            callback = state.get("progress_callback")
+            
+            try:
+                # Find the results folder (pattern: custom_strategy_<hash>)
+                results_base = backend_dir.parent / "backtesting" / "results"
+                if results_base.exists():
+                    # Find most recent custom_strategy folder
+                    strategy_folders = sorted(
+                        [f for f in results_base.iterdir() if f.is_dir() and f.name.startswith("custom_strategy_")],
+                        key=lambda x: x.stat().st_mtime,
+                        reverse=True
+                    )
+                    
+                    if strategy_folders:
+                        # Get the most recent one
+                        results_folder = strategy_folders[0]
+                        json_file = results_folder / "BasicTemplateFrameworkAlgorithm.json"
+                        
+                        if json_file.exists():
+                            with open(json_file, 'r') as f:
+                                backtest_data = json.load(f)
+                            logger.info("✓ Loaded backtest results JSON for order replay")
+                        else:
+                            logger.warning("Results JSON not found: %s", json_file)
+                    else:
+                        logger.warning("No custom_strategy folders found in results")
+            except Exception as e:
+                logger.warning("Failed to load backtest results JSON: %s", str(e))
+            
+            # Send backtest replay message if we have the data
+            if backtest_data and callback:
+                from app.message_types import create_backtest_replay_message
+                replay_message = create_backtest_replay_message(
+                    content="🎬 **Order Replay Ready**\n\nClick to view animated backtest execution",
+                    backtest_data=backtest_data,
+                    metadata={
+                        "metrics": metrics,
+                        "symbol": symbol,
+                        "timeframe": timeframe
+                    }
+                )
+                await callback(replay_message)
+                logger.info("✓ Sent backtest replay data to frontend")
+            
             return {
                 "compile_success": True,
                 "compile_errors": [],

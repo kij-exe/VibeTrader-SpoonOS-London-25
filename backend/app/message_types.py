@@ -113,3 +113,17 @@ def create_error_message(content: str, metadata: Optional[Dict[str, Any]] = None
         "content": content,
         "metadata": metadata or {}
     }
+
+
+def create_backtest_replay_message(
+    content: str,
+    backtest_data: Dict[str, Any],
+    metadata: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Create a message with full backtest results for order replay."""
+    return {
+        "message_type": "backtest_replay",
+        "content": content,
+        "backtest_data": backtest_data,
+        "metadata": metadata or {}
+    }
