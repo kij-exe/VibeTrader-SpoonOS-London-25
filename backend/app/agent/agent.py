@@ -774,35 +774,38 @@ async def _respond_node(state: Dict[str, Any]) -> Dict[str, Any]:
     code = (state.get("strategy_code") or "").strip()
     backtest_summary = state.get("backtest_summary") or ""
     metrics = state.get("backtest_metrics") or {}
+    strategy_spec = state.get("strategy_spec", {})
     callback = state.get("progress_callback")
 
-    # Build final message (avoid duplicates)
-    parts = []
+    # Build structured message with code block
+    from app.message_types import create_results_message
     
-    if backtest_summary:
-        parts.append("✅ **Strategy Backtest Results**\n")
-        parts.append(backtest_summary)
+    # Create content text
+    content = "✅ **Strategy Backtest Results**\n\n" + backtest_summary if backtest_summary else "Strategy generated."
     
-    if code:
-        parts.append("\n**Generated Strategy Code:**\n")
-        parts.append(f"```python\n{code}\n```")
+    # Create structured message with code block
+    structured_message = create_results_message(
+        content=content,
+        code=code if code else None,
+        language="python",
+        metadata={
+            "metrics": metrics,
+            "strategy_spec": strategy_spec
+        }
+    )
     
-    # Note: Removed duplicate detailed metrics section since summary already shows key metrics
-    
-    final_message = "\n".join(parts)
-    
-    # Send to user (only once)
-    if callback and final_message:
-        await callback(final_message)
-        logger.info("✓ Final response sent to user (%d chars)", len(final_message))
+    # Send structured message (only once)
+    if callback:
+        await callback(structured_message)
+        logger.info("✓ Final response sent to user (structured with code block)")
     else:
-        logger.warning("No callback or empty message - not sending")
+        logger.warning("No callback - not sending")
     
     logger.info("="*60)
     logger.info("WORKFLOW COMPLETE")
     logger.info("="*60)
     
-    return {"output": final_message, "final_response_sent": True}
+    return {"output": content, "final_response_sent": True}
 
 
 def _route_from_entry(state: Dict[str, Any]) -> str:

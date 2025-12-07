@@ -30,15 +30,19 @@ export const useWebSocket = () => {
         try {
           const data = JSON.parse(event.data);
           if (data.type === 'message') {
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: Date.now(),
-                content: data.content,
-                sender: 'agent',
-                timestamp: new Date(),
-              },
-            ]);
+            // Support both plain text and structured messages
+            const message = {
+              id: Date.now() + Math.random(), // Ensure unique ID
+              sender: 'agent',
+              timestamp: new Date(),
+              // Structured message fields
+              messageType: data.message_type || 'text',
+              content: data.content,
+              codeBlocks: data.code_blocks || null,
+              metadata: data.metadata || null,
+            };
+            
+            setMessages((prev) => [...prev, message]);
           }
         } catch (error) {
           console.error('Failed to parse message:', error);

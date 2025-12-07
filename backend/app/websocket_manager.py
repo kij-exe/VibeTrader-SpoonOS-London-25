@@ -5,7 +5,7 @@ Manages WebSocket connections and message routing.
 """
 
 import logging
-from typing import Dict
+from typing import Dict, Union, Any
 from fastapi import WebSocket
 
 logger = logging.getLogger(__name__)
@@ -40,41 +40,62 @@ class ConnectionManager:
             del self.active_connections[client_id]
             logger.info(f"Client {client_id} disconnected. Total connections: {len(self.active_connections)}")
 
-    async def send_message(self, client_id: str, message: str) -> None:
+    async def send_message(self, client_id: str, message: Union[str, Dict[str, Any]]) -> None:
         """
         Send a message to a specific client.
         
         Args:
             client_id: The target client
-            message: The message to send
+            message: The message to send (string or structured dict)
         """
         if client_id in self.active_connections:
             websocket = self.active_connections[client_id]
             try:
-                await websocket.send_json({
-                    "type": "message",
-                    "content": message
-                })
-                logger.debug(f"Sent message to {client_id}: {message}")
+                # Support both plain text (legacy) and structured messages
+                if isinstance(message, str):
+                    payload = {
+                        "type": "message",
+                        "message_type": "text",
+                        "content": message
+                    }
+                else:
+                    # Structured message
+                    payload = {
+                        "type": "message",
+                        **message
+                    }
+                
+                await websocket.send_json(payload)
+                logger.debug(f"Sent message to {client_id}: {type(message).__name__}")
             except Exception as e:
                 logger.warning(f"Failed to send message to {client_id}: {e}")
                 # Client likely disconnected, remove from active connections
                 self.disconnect(client_id)
 
-    async def broadcast(self, message: str) -> None:
+    async def broadcast(self, message: Union[str, Dict[str, Any]]) -> None:
         """
         Broadcast a message to all connected clients.
         
         Args:
-            message: The message to broadcast
+            message: The message to broadcast (string or structured dict)
         """
         disconnected = []
         for client_id, websocket in list(self.active_connections.items()):
             try:
-                await websocket.send_json({
-                    "type": "message",
-                    "content": message
-                })
+                # Support both plain text (legacy) and structured messages
+                if isinstance(message, str):
+                    payload = {
+                        "type": "message",
+                        "message_type": "text",
+                        "content": message
+                    }
+                else:
+                    payload = {
+                        "type": "message",
+                        **message
+                    }
+                
+                await websocket.send_json(payload)
             except Exception as e:
                 logger.warning(f"Failed to broadcast to {client_id}: {e}")
                 disconnected.append(client_id)
@@ -83,4 +104,4 @@ class ConnectionManager:
         for client_id in disconnected:
             self.disconnect(client_id)
         
-        logger.debug(f"Broadcast message to {len(self.active_connections)} clients: {message}")
+        logger.debug(f"Broadcast message to {len(self.active_connections)} clients")

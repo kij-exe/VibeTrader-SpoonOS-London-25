@@ -64,3 +64,39 @@ body {
 .typing-dot:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+/* Custom scrollbar for code blocks */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-dark-800;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* Markdown prose styling adjustments */
+.prose-invert {
+  color: #e5e7eb;
+}
+
+.prose-invert strong {
+  color: #ffffff;
+}
+
+.prose-invert a {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.prose-invert code {
+  color: #fbbf24;
+}
