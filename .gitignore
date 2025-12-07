@@ -54,8 +54,8 @@ backtesting/data_storage/lean/crypto/
 !backtesting/data_storage/lean/market-hours/
 !backtesting/data_storage/lean/symbol-properties/
 
-# Backtest results (generated output)
-backtesting/results/
+# Backtest results (generated output folders, not the module files)
+backtesting/results/*/
 
 # Generated strategy files (patched copies with 8-char hex hash like default_rsi_ea58656c.py)
 # Pattern: any name ending with _[8 hex chars].py
