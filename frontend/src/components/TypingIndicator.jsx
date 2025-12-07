@@ -3,15 +3,15 @@ import { Bot } from 'lucide-react';
 
 const TypingIndicator = () => {
   return (
-    <div className="flex gap-3 message-enter">
-      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-cyan-500">
-        <Bot className="w-4 h-4 text-white" />
+    <div className="flex gap-4 message-enter">
+      <div className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-neon-400/20 to-neon-600/10">
+        <Bot className="w-4 h-4 text-neon-400" />
       </div>
-      <div className="bg-dark-800 px-4 py-3 rounded-2xl rounded-tl-sm">
-        <div className="flex gap-1">
-          <div className="typing-dot w-2 h-2 bg-dark-400 rounded-full"></div>
-          <div className="typing-dot w-2 h-2 bg-dark-400 rounded-full"></div>
-          <div className="typing-dot w-2 h-2 bg-dark-400 rounded-full"></div>
+      <div className="glass-card px-5 py-3.5 rounded-2xl rounded-tl-sm">
+        <div className="flex gap-1.5">
+          <div className="typing-dot"></div>
+          <div className="typing-dot"></div>
+          <div className="typing-dot"></div>
         </div>
       </div>
     </div>
