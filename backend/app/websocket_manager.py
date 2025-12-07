@@ -72,6 +72,24 @@ class ConnectionManager:
                 # Client likely disconnected, remove from active connections
                 self.disconnect(client_id)
 
+    async def send_raw_message(self, client_id: str, message: str) -> None:
+        """
+        Send a raw JSON string message to a specific client.
+        Used for backtest results that are already JSON formatted.
+        
+        Args:
+            client_id: The target client
+            message: The raw JSON string to send
+        """
+        if client_id in self.active_connections:
+            websocket = self.active_connections[client_id]
+            try:
+                await websocket.send_text(message)
+                logger.debug(f"Sent raw message to {client_id}")
+            except Exception as e:
+                logger.warning(f"Failed to send raw message to {client_id}: {e}")
+                self.disconnect(client_id)
+
     async def broadcast(self, message: Union[str, Dict[str, Any]]) -> None:
         """
         Broadcast a message to all connected clients.

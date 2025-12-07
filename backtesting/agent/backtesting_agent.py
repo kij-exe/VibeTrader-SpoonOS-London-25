@@ -94,6 +94,7 @@ class BacktestResponse:
     
     # Results
     report: Optional[BacktestReport] = None
+    results_dir: Optional[Path] = None  # Path to results folder for this specific run
     
     # Execution details
     data_fetch_time: float = 0.0
@@ -116,6 +117,7 @@ class BacktestResponse:
             "request_id": self.request_id,
             "success": self.success,
             "report": self.report.to_dict() if self.report else None,
+            "results_dir": str(self.results_dir) if self.results_dir else None,
             "execution": {
                 "data_fetch_time": self.data_fetch_time,
                 "conversion_time": self.conversion_time,
@@ -227,9 +229,10 @@ class BacktestingAgent:
             strategy_file = await self._prepare_strategy(request)
             logger.info(f"Strategy prepared: {strategy_file}")
             
-            result = await self._execute_lean_backtest(request, strategy_file, lean_data_path)
+            result, output_dir = await self._execute_lean_backtest(request, strategy_file, lean_data_path)
             
             response.execution_time = (datetime.now() - exec_start).total_seconds()
+            response.results_dir = output_dir  # Store the exact results folder
             
             if not result.success:
                 response.error_message = result.error_message
@@ -307,13 +310,15 @@ class BacktestingAgent:
                 )
             return self._patch_strategy_file(request)
         
-        # If strategy code is provided, write it to a file
+        # If strategy code is provided, patch it and write to a file
         if request.strategy_code:
+            patched_code = self._patch_strategy_code(request.strategy_code, request)
             strategy_file = (
                 self.settings.paths.strategies_dir
                 / f"{request.strategy_name}_{request.request_id}.py"
             )
-            strategy_file.write_text(request.strategy_code)
+            strategy_file.write_text(patched_code)
+            logger.info(f"Patched strategy code: {request.symbol}, {request.interval}, {request.start_date} to {request.end_date}")
             return strategy_file
         
         # No strategy provided
@@ -341,11 +346,11 @@ class BacktestingAgent:
             )
         return self.SUPPORTED_INTERVALS[interval]
     
-    def _patch_strategy_file(self, request: BacktestRequest) -> Path:
-        """Patch a strategy file with CLI parameters (symbol, dates, capital, resolution)."""
+    def _patch_strategy_code(self, code: str, request: 'BacktestRequest') -> str:
+        """Patch strategy code with request parameters (symbol, dates, capital, resolution)."""
         import re
         
-        content = request.strategy_file.read_text()
+        content = code
         
         # Validate and get Lean resolution
         lean_resolution = self._validate_interval(request.interval)
@@ -385,14 +390,40 @@ class BacktestingAgent:
             content
         )
         
+        # Patch RSI indicator resolution if present (handles both numeric and variable periods)
+        # Match: .RSI(symbol, period, type, Resolution.XXX) or .RSI(symbol, period)
+        content = re.sub(
+            r'\.RSI\(([^,]+),\s*([^,]+),\s*[^,]+,\s*Resolution\.\w+\)',
+            f'.RSI(\\1, \\2, MovingAverageType.Wilders, Resolution.{lean_resolution})',
+            content
+        )
+        
+        # Also patch simple RSI calls: .RSI(symbol, period) - add resolution
+        # This handles cases where RSI is created without explicit resolution
+        
+        # Patch any remaining Resolution.XXX in indicator creation
+        # This catches indicators like EMA, SMA, etc. that use Resolution
+        content = re.sub(
+            r'Resolution\.(Hour|Minute|Daily|Second)',
+            f'Resolution.{lean_resolution}',
+            content
+        )
+        
+        return content
+    
+    def _patch_strategy_file(self, request: BacktestRequest) -> Path:
+        """Patch a strategy file with CLI parameters (symbol, dates, capital, resolution)."""
+        content = request.strategy_file.read_text()
+        patched_content = self._patch_strategy_code(content, request)
+        
         # Write patched file to temp location
         patched_file = (
             self.settings.paths.strategies_dir
             / f"{request.strategy_file.stem}_{request.request_id}.py"
         )
-        patched_file.write_text(content)
+        patched_file.write_text(patched_content)
         
-        logger.info(f"Patched strategy: {request.symbol}, {request.interval} ({lean_resolution}), {request.start_date} to {request.end_date}")
+        logger.info(f"Patched strategy: {request.symbol}, {request.interval}, {request.start_date} to {request.end_date}")
         return patched_file
     
     async def _execute_lean_backtest(
@@ -400,8 +431,12 @@ class BacktestingAgent:
         request: BacktestRequest,
         strategy_file: Path,
         data_dir: Path,
-    ):
-        """Execute backtest via Lean Engine (requires Docker)."""
+    ) -> tuple:
+        """Execute backtest via Lean Engine (requires Docker).
+        
+        Returns:
+            tuple: (LeanBacktestResult, output_dir Path)
+        """
         output_dir = (
             self.settings.paths.results_dir
             / f"{request.strategy_name}_{request.request_id}"
@@ -418,7 +453,8 @@ class BacktestingAgent:
             parameters=request.parameters,
         )
         
-        return await self.lean_runner.run_backtest(config)
+        result = await self.lean_runner.run_backtest(config)
+        return result, output_dir
     
     def _parse_results(self, lean_result, request: BacktestRequest) -> BacktestReport:
         """Parse Lean results into BacktestReport."""

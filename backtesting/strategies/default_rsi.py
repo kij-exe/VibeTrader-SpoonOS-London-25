@@ -62,7 +62,7 @@ class DefaultRsi(QCAlgorithm):
                 self._last_action = "BUY"
                 self.debug(f"BUY: RSI={self.rsi.current.value:.2f}")
 
-        # Exit conditions
+        # rExit conditions
         elif self.portfolio.invested:
             if self.rsi.current.value > self.overbought:
                 self.liquidate(self.symbol)
