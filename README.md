@@ -59,7 +59,7 @@ VibeTrader-SpoonOS-London-25/
 ├── backend/
 │   ├── app/
 │   │   ├── agent/
-│   │   │   └── stub_agent.py      # Stub agent (logs + responds "HI")
+│   │   │   └── agent.py      # Stub agent (logs + responds "HI")
 │   │   ├── main.py                # FastAPI entry point
 │   │   └── websocket_manager.py   # WebSocket connection management
 │   └── requirements.txt

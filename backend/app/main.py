@@ -11,7 +11,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.websocket_manager import ConnectionManager
-from app.agent.stub_agent import StubAgent
+from app.agent.agent import StubAgent
 
 # Configure logging
 logging.basicConfig(
@@ -74,6 +74,9 @@ async def websocket_endpoint(websocket: WebSocket):
     # Initialize agent for this client
     agent = StubAgent(send_callback=send_to_client)
     
+    # Start the consumer loop
+    await agent.start()
+    
     # Send welcome message
     await manager.send_message(client_id, "Welcome to VibeTrader! Describe your portfolio management strategy and I'll help you build it.")
     
@@ -85,14 +88,16 @@ async def websocket_endpoint(websocket: WebSocket):
             
             if message:
                 logger.info(f"Received from {client_id}: {message}")
-                # Process message through agent
+                # Producer: add message to agent's queue
                 await agent.process_message(message)
                 
     except WebSocketDisconnect:
+        await agent.stop()
         manager.disconnect(client_id)
         logger.info(f"Client {client_id} disconnected")
     except Exception as e:
         logger.error(f"Error with client {client_id}: {e}")
+        await agent.stop()
         manager.disconnect(client_id)
 
 
