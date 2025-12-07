@@ -607,10 +607,17 @@ async def _compile_node(state: Dict[str, Any]) -> Dict[str, Any]:
         
         from backtesting.agent import BacktestingAgent, BacktestRequest
         
-        # Save strategy to temp file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        # Save strategy to permanent file (for dashboard re-runs)
+        import hashlib
+        strategy_hash = hashlib.md5(code.encode()).hexdigest()[:8]
+        strategies_dir = backend_dir.parent / "backtesting" / "strategies"
+        strategies_dir.mkdir(parents=True, exist_ok=True)
+        strategy_file = strategies_dir / f"strategy_{strategy_hash}.py"
+        
+        with open(strategy_file, 'w') as f:
             f.write(code)
-            strategy_file = f.name
+        
+        strategy_file = str(strategy_file)  # Convert to string for compatibility
         
         try:
             # Parse date range from requirements
@@ -732,29 +739,28 @@ async def _compile_node(state: Dict[str, Any]) -> Dict[str, Any]:
             callback = state.get("progress_callback")
             
             try:
-                # Find the results folder (pattern: custom_strategy_<hash>)
-                results_base = backend_dir.parent / "backtesting" / "results"
-                if results_base.exists():
-                    # Find most recent custom_strategy folder
-                    strategy_folders = sorted(
-                        [f for f in results_base.iterdir() if f.is_dir() and f.name.startswith("custom_strategy_")],
-                        key=lambda x: x.stat().st_mtime,
-                        reverse=True
-                    )
+                # Use the EXACT results folder from the backtest response
+                if response.results_dir and response.results_dir.exists():
+                    # Find the main results JSON file (not order-events, summary, data-monitor, etc.)
+                    files = list(response.results_dir.iterdir())
+                    json_file = None
+                    for f in files:
+                        if f.suffix == '.json':
+                            # Skip auxiliary files
+                            if any(skip in f.name for skip in ['order-events', 'summary', 'data-monitor', 'log', 'config']):
+                                continue
+                            json_file = f
+                            break
                     
-                    if strategy_folders:
-                        # Get the most recent one
-                        results_folder = strategy_folders[0]
-                        json_file = results_folder / "BasicTemplateFrameworkAlgorithm.json"
-                        
-                        if json_file.exists():
-                            with open(json_file, 'r') as f:
-                                backtest_data = json.load(f)
-                            logger.info("✓ Loaded backtest results JSON for order replay")
-                        else:
-                            logger.warning("Results JSON not found: %s", json_file)
+                    if json_file and json_file.exists():
+                        with open(json_file, 'r') as f:
+                            backtest_data = json.load(f)
+                        logger.info("✓ Loaded backtest results JSON for order replay: %s", json_file.name)
                     else:
-                        logger.warning("No custom_strategy folders found in results")
+                        logger.warning("Results JSON not found in: %s (files: %s)", 
+                                      response.results_dir, [f.name for f in files])
+                else:
+                    logger.warning("Results directory not available: %s", response.results_dir)
             except Exception as e:
                 logger.warning("Failed to load backtest results JSON: %s", str(e))
             
@@ -767,11 +773,14 @@ async def _compile_node(state: Dict[str, Any]) -> Dict[str, Any]:
                     metadata={
                         "metrics": metrics,
                         "symbol": symbol,
-                        "timeframe": timeframe
+                        "timeframe": timeframe,
+                        "strategyPath": strategy_file,  # Path to strategy file for dashboard re-runs
+                        "startDate": start_date_str,
+                        "endDate": end_date_str,
                     }
                 )
                 await callback(replay_message)
-                logger.info("✓ Sent backtest replay data to frontend")
+                logger.info("✓ Sent backtest replay data to frontend (strategy: %s)", strategy_file)
             
             return {
                 "compile_success": True,
@@ -781,11 +790,8 @@ async def _compile_node(state: Dict[str, Any]) -> Dict[str, Any]:
             }
             
         finally:
-            # Clean up temp file
-            try:
-                os.unlink(strategy_file)
-            except:
-                pass
+            # Strategy file is kept for dashboard re-runs
+            pass
     
     except Exception as e:
         logger.error("❌ BACKTEST EXCEPTION: %s", str(e)[:200], exc_info=False)

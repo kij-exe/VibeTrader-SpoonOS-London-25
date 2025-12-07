@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { User, Bot, CheckCircle, AlertCircle, Loader2, Play } from 'lucide-react';
+import { User, Bot, CheckCircle, AlertCircle, Loader2, Play, BarChart3 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import CodeBlock from './CodeBlock';
-import BacktestReplay from './BacktestReplay';
+import BacktestDashboard from './BacktestDashboard';
 
 const ChatMessage = ({ message }) => {
   const isUser = message.sender === 'user';
@@ -112,14 +112,14 @@ const ChatMessage = ({ message }) => {
           </div>
         )}
 
-        {/* Backtest Replay Button */}
+        {/* Backtest Dashboard Button */}
         {message.backtestData && messageType === 'backtest_replay' && (
           <button
             onClick={() => setShowReplay(true)}
             className="mt-3 flex items-center gap-2 px-5 py-3 neon-btn rounded-xl transition-all transform hover:scale-105 neon-glow"
           >
-            <Play className="w-5 h-5" />
-            <span className="font-medium">View Order Replay</span>
+            <BarChart3 className="w-5 h-5" />
+            <span className="font-medium">View Backtest Dashboard</span>
           </button>
         )}
 
@@ -129,13 +129,15 @@ const ChatMessage = ({ message }) => {
         </span>
       </div>
 
-      {/* Backtest Replay Overlay */}
+      {/* Backtest Dashboard Overlay */}
       {showReplay && message.backtestData && (
-        <BacktestReplay
-          backtestData={message.backtestData}
-          metadata={{
-            ...message.metadata,
+        <BacktestDashboard
+          initialData={{
+            backtestData: message.backtestData,
+            symbol: message.metadata?.symbol || 'BTCUSDT',
+            timeframe: message.metadata?.timeframe || '1h',
             initialCapital: 100000,
+            strategyPath: message.metadata?.strategyPath,
           }}
           onClose={() => setShowReplay(false)}
         />
