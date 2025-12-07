@@ -157,21 +157,30 @@ const BacktestReplay = ({ backtestData, onClose, metadata }) => {
   const progress = orders.length > 0 ? ((currentOrderIndex + 1) / orders.length) * 100 : 0;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-dark-900 rounded-2xl shadow-2xl border border-dark-700 max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+      {/* Floating orbs for modal background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-96 h-96 rounded-full bg-neon-400/20 blur-[100px] -top-20 -left-20 animate-pulse" />
+        <div className="absolute w-80 h-80 rounded-full bg-neon-400/15 blur-[80px] -bottom-20 -right-20 animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+      
+      <div className="glass-card rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col relative neon-border">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-700">
+        <div className="flex items-center justify-between p-6 border-b border-neon-400/10 glass-strong">
           <div>
-            <h2 className="text-2xl font-bold text-white">📊 Backtest Order Replay</h2>
-            <p className="text-sm text-dark-400 mt-1">
+            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+              <span className="text-2xl">📊</span>
+              <span>Backtest Order Replay</span>
+            </h2>
+            <p className="text-sm text-dark-300 mt-1">
               {metadata?.symbol} • {metadata?.timeframe} • {orders.length} orders
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-dark-800 rounded-lg transition-colors"
+            className="p-2.5 glass hover:bg-neon-400/10 rounded-xl transition-all hover:neon-border"
           >
-            <X className="w-6 h-6 text-dark-400" />
+            <X className="w-5 h-5 text-dark-300 hover:text-neon-400" />
           </button>
         </div>
 
@@ -204,38 +213,38 @@ const BacktestReplay = ({ backtestData, onClose, metadata }) => {
 
           {/* Current Order */}
           {currentOrder && (
-            <div className="bg-dark-800 rounded-xl p-4 border border-dark-700">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-dark-300">
+            <div className="glass-card rounded-2xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-dark-200">
                   Order #{currentOrderIndex + 1} of {orders.length}
                 </h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                <span className={`px-4 py-1.5 rounded-full text-xs font-semibold ${
                   currentOrder.direction === 0
-                    ? 'bg-green-500/20 text-green-400'
-                    : 'bg-red-500/20 text-red-400'
+                    ? 'bg-neon-400/20 text-neon-400 neon-border'
+                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
                 }`}>
                   {currentOrder.direction === 0 ? 'BUY' : 'SELL'}
                 </span>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
                 <div>
-                  <p className="text-dark-500">Symbol</p>
-                  <p className="text-white font-medium">
+                  <p className="text-dark-400 text-xs mb-1">Symbol</p>
+                  <p className="text-white font-semibold">
                     {currentOrder.symbol?.value || currentOrder.symbol?.permtick}
                   </p>
                 </div>
                 <div>
-                  <p className="text-dark-500">Price</p>
-                  <p className="text-white font-medium">${(currentOrder.price || 0).toFixed(4)}</p>
+                  <p className="text-dark-400 text-xs mb-1">Price</p>
+                  <p className="text-white font-semibold">${(currentOrder.price || 0).toFixed(4)}</p>
                 </div>
                 <div>
-                  <p className="text-dark-500">Quantity</p>
-                  <p className="text-white font-medium">{Math.abs(currentOrder.quantity || 0).toFixed(2)}</p>
+                  <p className="text-dark-400 text-xs mb-1">Quantity</p>
+                  <p className="text-white font-semibold">{Math.abs(currentOrder.quantity || 0).toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="text-dark-500">Time</p>
-                  <p className="text-white font-medium">
+                  <p className="text-dark-400 text-xs mb-1">Time</p>
+                  <p className="text-white font-semibold">
                     {new Date(currentOrder.time).toLocaleDateString()}
                   </p>
                 </div>
@@ -244,68 +253,68 @@ const BacktestReplay = ({ backtestData, onClose, metadata }) => {
           )}
 
           {/* Progress Bar */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="text-dark-400">Progress</span>
-              <span className="text-dark-300">{progress.toFixed(1)}%</span>
+              <span className="text-neon-400 font-medium">{progress.toFixed(1)}%</span>
             </div>
-            <div className="w-full bg-dark-800 rounded-full h-2 overflow-hidden">
+            <div className="w-full glass rounded-full h-2.5 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-primary-600 to-primary-400 transition-all duration-300"
-                style={{ width: `${progress}%` }}
+                className="h-full bg-gradient-to-r from-neon-400 to-neon-500 transition-all duration-300 rounded-full"
+                style={{ width: `${progress}%`, boxShadow: '0 0 20px rgba(44, 255, 5, 0.5)' }}
               />
             </div>
           </div>
 
           {/* Trade Stats */}
-          <div className="bg-dark-800 rounded-xl p-4 border border-dark-700">
-            <h3 className="text-sm font-semibold text-dark-300 mb-3">Trade Statistics</h3>
-            <div className="grid grid-cols-3 gap-4 text-sm">
+          <div className="glass-card rounded-2xl p-5">
+            <h3 className="text-sm font-semibold text-dark-200 mb-4">Trade Statistics</h3>
+            <div className="grid grid-cols-3 gap-6 text-sm">
               <div>
-                <p className="text-dark-500">Total Trades</p>
-                <p className="text-white font-semibold text-lg">{runningMetrics.totalTrades}</p>
+                <p className="text-dark-400 text-xs mb-1">Total Trades</p>
+                <p className="text-white font-bold text-2xl">{runningMetrics.totalTrades}</p>
               </div>
               <div>
-                <p className="text-green-400">Winning</p>
-                <p className="text-white font-semibold text-lg">{runningMetrics.winningTrades}</p>
+                <p className="text-neon-400 text-xs mb-1">Winning</p>
+                <p className="text-neon-400 font-bold text-2xl">{runningMetrics.winningTrades}</p>
               </div>
               <div>
-                <p className="text-red-400">Losing</p>
-                <p className="text-white font-semibold text-lg">{runningMetrics.losingTrades}</p>
+                <p className="text-red-400 text-xs mb-1">Losing</p>
+                <p className="text-red-400 font-bold text-2xl">{runningMetrics.losingTrades}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Controls */}
-        <div className="p-6 border-t border-dark-700 bg-dark-800/50">
+        <div className="p-6 border-t border-neon-400/10 glass-strong">
           <div className="flex items-center justify-center gap-4">
             <button
               onClick={handleReset}
-              className="p-3 hover:bg-dark-700 rounded-lg transition-colors"
+              className="p-3 glass hover:bg-neon-400/10 rounded-xl transition-all group"
               title="Reset"
             >
-              <RotateCcw className="w-5 h-5 text-dark-300" />
+              <RotateCcw className="w-5 h-5 text-dark-300 group-hover:text-neon-400 transition-colors" />
             </button>
             
             <button
               onClick={handlePlayPause}
-              className="p-4 bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors"
+              className="p-4 neon-btn rounded-xl transition-all neon-glow"
               title={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? (
-                <Pause className="w-6 h-6 text-white" />
+                <Pause className="w-6 h-6" />
               ) : (
-                <Play className="w-6 h-6 text-white" />
+                <Play className="w-6 h-6" />
               )}
             </button>
             
             <button
               onClick={handleSkip}
-              className="p-3 hover:bg-dark-700 rounded-lg transition-colors"
+              className="p-3 glass hover:bg-neon-400/10 rounded-xl transition-all group"
               title="Skip +10"
             >
-              <SkipForward className="w-5 h-5 text-dark-300" />
+              <SkipForward className="w-5 h-5 text-dark-300 group-hover:text-neon-400 transition-colors" />
             </button>
           </div>
           
@@ -315,7 +324,7 @@ const BacktestReplay = ({ backtestData, onClose, metadata }) => {
             <select
               value={speed}
               onChange={(e) => setSpeed(Number(e.target.value))}
-              className="bg-dark-700 text-white rounded-lg px-3 py-1 text-sm border border-dark-600 focus:outline-none focus:border-primary-600"
+              className="glass-input text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-neon-400/40"
             >
               <option value={500}>0.5x</option>
               <option value={250}>1x</option>
@@ -332,24 +341,24 @@ const BacktestReplay = ({ backtestData, onClose, metadata }) => {
 
 const MetricCard = ({ label, value, subValue, change, isPositive, isNegative }) => {
   return (
-    <div className="bg-dark-800 rounded-lg p-4 border border-dark-700">
-      <p className="text-xs text-dark-500 mb-1">{label}</p>
+    <div className="glass-card rounded-xl p-4">
+      <p className="text-xs text-dark-400 mb-1.5">{label}</p>
       <div className="flex items-baseline gap-2">
-        <p className={`text-lg font-bold ${
-          isPositive ? 'text-green-400' : isNegative ? 'text-red-400' : 'text-white'
+        <p className={`text-xl font-bold ${
+          isPositive ? 'text-neon-400' : isNegative ? 'text-red-400' : 'text-white'
         }`}>
           {value}
         </p>
         {change !== undefined && (
           <span className={`flex items-center text-xs ${
-            change >= 0 ? 'text-green-400' : 'text-red-400'
+            change >= 0 ? 'text-neon-400' : 'text-red-400'
           }`}>
             {change >= 0 ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
             {Math.abs(change).toFixed(2)}%
           </span>
         )}
       </div>
-      {subValue && <p className="text-xs text-dark-400 mt-1">{subValue}</p>}
+      {subValue && <p className="text-xs text-dark-300 mt-1.5">{subValue}</p>}
     </div>
   );
 };

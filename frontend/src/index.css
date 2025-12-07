@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,55 +8,276 @@
   font-family: 'Inter', sans-serif;
 }
 
-body {
-  @apply bg-dark-950 text-dark-100;
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Custom scrollbar */
+body {
+  background: #000000;
+  color: #e2e8f0;
+}
+
+/* ============================================
+   LIQUID GLASS EFFECTS
+   ============================================ */
+
+.glass {
+  background: rgba(10, 15, 26, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(44, 255, 5, 0.1);
+}
+
+.glass-strong {
+  background: rgba(10, 15, 26, 0.8);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(44, 255, 5, 0.15);
+}
+
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(44, 255, 5, 0.05) 0%,
+    rgba(10, 15, 26, 0.95) 50%,
+    rgba(44, 255, 5, 0.03) 100%
+  );
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(44, 255, 5, 0.12);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(44, 255, 5, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.glass-card-solid {
+  background: rgba(8, 12, 20, 0.98);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(44, 255, 5, 0.12);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(44, 255, 5, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Solid avatar backgrounds */
+.avatar-solid {
+  background: linear-gradient(135deg, #0a1a0a 0%, #0d1f0d 100%);
+  border: 1px solid rgba(44, 255, 5, 0.3);
+}
+
+.avatar-solid-bright {
+  background: linear-gradient(135deg, #0f2a0f 0%, #143314 100%);
+  border: 1px solid rgba(44, 255, 5, 0.5);
+}
+
+.avatar-solid-error {
+  background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 100%);
+  border: 1px solid rgba(255, 50, 50, 0.3);
+}
+
+.glass-input {
+  background: rgba(5, 7, 9, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(44, 255, 5, 0.15);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  border-color: rgba(44, 255, 5, 0.4);
+  box-shadow: 0 0 20px rgba(44, 255, 5, 0.15);
+}
+
+/* ============================================
+   INTERACTIVE GRID BACKGROUND
+   ============================================ */
+
+.grid-background {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), 1fr);
+  grid-template-rows: repeat(var(--grid-rows), 1fr);
+  gap: 1px;
+  z-index: 1;
+}
+
+.grid-cell {
+  background: rgba(44, 255, 5, 0.03);
+  border: 1px solid rgba(44, 255, 5, 0.1);
+  transition: all 0.1s ease-out;
+  cursor: pointer;
+}
+
+.grid-cell:hover {
+  background: rgba(44, 255, 5, 0.5);
+  border-color: rgba(44, 255, 5, 0.8);
+  box-shadow: 
+    0 0 25px rgba(44, 255, 5, 0.6),
+    0 0 50px rgba(44, 255, 5, 0.3),
+    inset 0 0 15px rgba(44, 255, 5, 0.4);
+  position: relative;
+  z-index: 2;
+}
+
+/* Ripple intensity levels */
+.grid-cell.ripple-0 {
+  background: rgba(44, 255, 5, 0.5) !important;
+  border-color: rgba(44, 255, 5, 0.7) !important;
+  box-shadow: 0 0 20px rgba(44, 255, 5, 0.6), inset 0 0 15px rgba(44, 255, 5, 0.3) !important;
+}
+
+.grid-cell.ripple-1 {
+  background: rgba(44, 255, 5, 0.35) !important;
+  border-color: rgba(44, 255, 5, 0.5) !important;
+  box-shadow: 0 0 15px rgba(44, 255, 5, 0.4), inset 0 0 10px rgba(44, 255, 5, 0.2) !important;
+}
+
+.grid-cell.ripple-2 {
+  background: rgba(44, 255, 5, 0.22) !important;
+  border-color: rgba(44, 255, 5, 0.35) !important;
+  box-shadow: 0 0 12px rgba(44, 255, 5, 0.25) !important;
+}
+
+.grid-cell.ripple-3 {
+  background: rgba(44, 255, 5, 0.14) !important;
+  border-color: rgba(44, 255, 5, 0.22) !important;
+  box-shadow: 0 0 8px rgba(44, 255, 5, 0.15) !important;
+}
+
+.grid-cell.ripple-4 {
+  background: rgba(44, 255, 5, 0.08) !important;
+  border-color: rgba(44, 255, 5, 0.12) !important;
+  box-shadow: 0 0 5px rgba(44, 255, 5, 0.08) !important;
+}
+
+.grid-cell.ripple-5 {
+  background: rgba(44, 255, 5, 0.04) !important;
+  border-color: rgba(44, 255, 5, 0.07) !important;
+}
+
+/* ============================================
+   NEON GLOW EFFECTS
+   ============================================ */
+
+.neon-text {
+  color: #2cff05;
+  text-shadow: 
+    0 0 10px rgba(44, 255, 5, 0.5),
+    0 0 20px rgba(44, 255, 5, 0.3),
+    0 0 40px rgba(44, 255, 5, 0.1);
+}
+
+.neon-border {
+  border: 1px solid rgba(44, 255, 5, 0.3);
+  box-shadow: 
+    0 0 10px rgba(44, 255, 5, 0.1),
+    inset 0 0 10px rgba(44, 255, 5, 0.05);
+}
+
+.neon-glow {
+  box-shadow: 
+    0 0 20px rgba(44, 255, 5, 0.3),
+    0 0 40px rgba(44, 255, 5, 0.1);
+}
+
+.neon-btn {
+  background: linear-gradient(135deg, rgba(44, 255, 5, 0.2) 0%, rgba(44, 255, 5, 0.1) 100%);
+  border: 1px solid rgba(44, 255, 5, 0.3);
+  color: #2cff05;
+  transition: all 0.3s ease;
+}
+
+.neon-btn:hover {
+  background: linear-gradient(135deg, rgba(44, 255, 5, 0.3) 0%, rgba(44, 255, 5, 0.15) 100%);
+  box-shadow: 0 0 30px rgba(44, 255, 5, 0.3);
+  transform: translateY(-2px);
+}
+
+.neon-btn:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   SHIMMER & SHINE EFFECTS
+   ============================================ */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(44, 255, 5, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-dark-900;
+  background: rgba(10, 15, 26, 0.5);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-dark-600 rounded-full;
+  background: rgba(44, 255, 5, 0.3);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-dark-500;
+  background: rgba(44, 255, 5, 0.5);
 }
 
-/* Message animation */
+/* ============================================
+   MESSAGE ANIMATIONS
+   ============================================ */
+
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .message-enter {
-  animation: slideIn 0.2s ease-out;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Typing indicator */
+/* ============================================
+   TYPING INDICATOR
+   ============================================ */
+
 @keyframes bounce {
-  0%, 60%, 100% {
-    transform: translateY(0);
-  }
-  30% {
-    transform: translateY(-4px);
-  }
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
 }
 
 .typing-dot {
+  width: 8px;
+  height: 8px;
+  background: #2cff05;
+  border-radius: 50%;
   animation: bounce 1.4s infinite;
+  box-shadow: 0 0 10px rgba(44, 255, 5, 0.5);
 }
 
 .typing-dot:nth-child(2) {
@@ -65,38 +288,71 @@ body {
   animation-delay: 0.4s;
 }
 
-/* Custom scrollbar for code blocks */
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-dark-800;
+  background: rgba(5, 7, 9, 0.8);
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-dark-600 rounded;
+  background: rgba(44, 255, 5, 0.3);
+  border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  @apply bg-dark-500;
+  background: rgba(44, 255, 5, 0.5);
 }
 
-/* Markdown prose styling adjustments */
+/* ============================================
+   PROSE STYLING
+   ============================================ */
+
 .prose-invert {
-  color: #e5e7eb;
+  color: #cbd5e1;
 }
 
 .prose-invert strong {
-  color: #ffffff;
+  color: #2cff05;
 }
 
 .prose-invert a {
-  color: #60a5fa;
+  color: #2cff05;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .prose-invert code {
-  color: #fbbf24;
+  color: #2cff05;
+  background: rgba(44, 255, 5, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(44, 255, 5, 0.3), transparent, rgba(44, 255, 5, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

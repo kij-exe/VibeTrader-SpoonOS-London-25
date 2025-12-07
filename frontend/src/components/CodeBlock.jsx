@@ -25,43 +25,43 @@ const CodeBlock = ({ code, language = 'python', filename }) => {
   };
 
   return (
-    <div className="my-4 rounded-xl overflow-hidden border border-dark-700 bg-dark-900">
+    <div className="my-4 rounded-xl overflow-hidden glass-card">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-dark-800/50 border-b border-dark-700">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-black/30 border-b border-neon-400/10">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-red-500"></div>
-          <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+          <div className="w-2 h-2 rounded-full bg-red-500/80"></div>
+          <div className="w-2 h-2 rounded-full bg-yellow-500/80"></div>
+          <div className="w-2 h-2 rounded-full bg-neon-400/80"></div>
           {filename && (
-            <span className="text-xs text-dark-400 ml-2 font-mono">{filename}</span>
+            <span className="text-xs text-dark-300 ml-2 font-mono">{filename}</span>
           )}
         </div>
         
         <div className="flex items-center gap-2">
-          <span className="text-xs text-dark-500 uppercase font-mono">{language}</span>
+          <span className="text-xs text-neon-400/60 uppercase font-mono">{language}</span>
           <button
             onClick={handleCopy}
-            className="p-1.5 hover:bg-dark-700 rounded-lg transition-colors group"
+            className="p-1.5 hover:bg-neon-400/10 rounded-lg transition-colors group"
             title="Copy code"
           >
             {copied ? (
-              <Check className="w-4 h-4 text-green-400" />
+              <Check className="w-4 h-4 text-neon-400" />
             ) : (
-              <Copy className="w-4 h-4 text-dark-400 group-hover:text-dark-200" />
+              <Copy className="w-4 h-4 text-dark-400 group-hover:text-neon-400" />
             )}
           </button>
           <button
             onClick={handleDownload}
-            className="p-1.5 hover:bg-dark-700 rounded-lg transition-colors group"
+            className="p-1.5 hover:bg-neon-400/10 rounded-lg transition-colors group"
             title="Download code"
           >
-            <Download className="w-4 h-4 text-dark-400 group-hover:text-dark-200" />
+            <Download className="w-4 h-4 text-dark-400 group-hover:text-neon-400" />
           </button>
         </div>
       </div>
 
       {/* Code */}
-      <div className="max-h-96 overflow-auto custom-scrollbar">
+      <div className="max-h-96 overflow-auto custom-scrollbar bg-black/40">
         <SyntaxHighlighter
           language={language}
           style={vscDarkPlus}

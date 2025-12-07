@@ -35,7 +35,7 @@ const ChatInput = ({ onSendMessage, disabled }) => {
 
   return (
     <form onSubmit={handleSubmit} className="relative">
-      <div className="flex items-end gap-2 bg-dark-800 rounded-2xl p-2 border border-dark-700 focus-within:border-primary-500 transition-colors">
+      <div className="flex items-end gap-2 glass-input rounded-2xl p-3 focus-within:border-neon-400/40 focus-within:shadow-neon transition-all">
         <textarea
           ref={textareaRef}
           value={message}
@@ -44,12 +44,12 @@ const ChatInput = ({ onSendMessage, disabled }) => {
           placeholder="Describe your investment strategy..."
           disabled={disabled}
           rows={1}
-          className="flex-1 bg-transparent text-dark-100 placeholder-dark-500 resize-none outline-none px-2 py-1.5 text-sm max-h-[150px]"
+          className="flex-1 bg-transparent text-white placeholder-dark-400 resize-none outline-none px-2 py-1.5 text-sm max-h-[150px]"
         />
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className="p-2 text-dark-500 hover:text-dark-300 transition-colors rounded-lg hover:bg-dark-700"
+            className="p-2 text-dark-400 hover:text-neon-400 transition-colors rounded-lg hover:bg-neon-400/10"
             title="Attach file (coming soon)"
             disabled
           >
@@ -58,10 +58,10 @@ const ChatInput = ({ onSendMessage, disabled }) => {
           <button
             type="submit"
             disabled={!message.trim() || disabled}
-            className={`p-2 rounded-xl transition-all ${
+            className={`p-2.5 rounded-xl transition-all duration-300 ${
               message.trim() && !disabled
-                ? 'bg-primary-600 text-white hover:bg-primary-500'
-                : 'bg-dark-700 text-dark-500 cursor-not-allowed'
+                ? 'neon-btn neon-glow'
+                : 'bg-dark-700/50 text-dark-500 cursor-not-allowed'
             }`}
           >
             <Send className="w-5 h-5" />
@@ -69,7 +69,8 @@ const ChatInput = ({ onSendMessage, disabled }) => {
         </div>
       </div>
       {disabled && (
-        <p className="text-xs text-amber-500 mt-2 text-center">
+        <p className="text-xs text-neon-400/70 mt-2 text-center flex items-center justify-center gap-2">
+          <span className="w-2 h-2 bg-neon-400 rounded-full animate-pulse" />
           Connecting to server...
         </p>
       )}

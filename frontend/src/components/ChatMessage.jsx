@@ -36,29 +36,29 @@ const ChatMessage = ({ message }) => {
 
   // Get background color based on message type
   const getAvatarBg = () => {
-    if (isUser) return 'bg-primary-600';
+    if (isUser) return 'avatar-solid neon-border';
     
     switch (messageType) {
       case 'results':
-        return 'bg-gradient-to-br from-green-500 to-emerald-500';
+        return 'avatar-solid-bright neon-glow';
       case 'error':
-        return 'bg-gradient-to-br from-red-500 to-orange-500';
+        return 'avatar-solid-error';
       case 'progress':
-        return 'bg-gradient-to-br from-blue-500 to-cyan-500';
+        return 'avatar-solid animate-pulse';
       case 'backtest_replay':
-        return 'bg-gradient-to-br from-purple-500 to-pink-500';
+        return 'avatar-solid-bright neon-glow';
       default:
-        return 'bg-gradient-to-br from-emerald-500 to-cyan-500';
+        return 'avatar-solid';
     }
   };
 
   return (
     <div
-      className={`message-enter flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}
+      className={`message-enter flex gap-4 ${isUser ? 'flex-row-reverse' : ''}`}
     >
       {/* Avatar */}
       <div
-        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${getAvatarBg()}`}
+        className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${getAvatarBg()}`}
       >
         {getMessageIcon()}
       </div>
@@ -66,15 +66,15 @@ const ChatMessage = ({ message }) => {
       {/* Message bubble */}
       <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[85%]`}>
         <div
-          className={`px-4 py-2.5 rounded-2xl ${
+          className={`px-5 py-3 rounded-2xl ${
             isUser
-              ? 'bg-primary-600 text-white rounded-tr-sm'
-              : 'bg-dark-800 text-dark-100 rounded-tl-sm'
+              ? 'neon-btn rounded-tr-sm'
+              : 'glass-card-solid rounded-tl-sm'
           }`}
         >
           {/* Content - render markdown for agent messages */}
           {isUser ? (
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm leading-relaxed whitespace-pre-wrap text-neon-400">
               {message.content}
             </p>
           ) : (
@@ -84,12 +84,12 @@ const ChatMessage = ({ message }) => {
                   // Prevent inline code blocks from rendering (we handle code blocks separately)
                   code: ({ node, inline, ...props }) => 
                     inline ? (
-                      <code className="bg-dark-700 px-1.5 py-0.5 rounded text-xs font-mono" {...props} />
+                      <code className="bg-neon-400/10 text-neon-400 px-1.5 py-0.5 rounded text-xs font-mono" {...props} />
                     ) : null,
                   p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                   ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1" {...props} />,
                   ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1" {...props} />,
-                  strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
+                  strong: ({ node, ...props }) => <strong className="font-semibold text-neon-400" {...props} />,
                 }}
               >
                 {message.content}
@@ -116,15 +116,15 @@ const ChatMessage = ({ message }) => {
         {message.backtestData && messageType === 'backtest_replay' && (
           <button
             onClick={() => setShowReplay(true)}
-            className="mt-3 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl transition-all transform hover:scale-105 shadow-lg"
+            className="mt-3 flex items-center gap-2 px-5 py-3 neon-btn rounded-xl transition-all transform hover:scale-105 neon-glow"
           >
-            <Play className="w-5 h-5 text-white" />
-            <span className="font-medium text-white">View Order Replay</span>
+            <Play className="w-5 h-5" />
+            <span className="font-medium">View Order Replay</span>
           </button>
         )}
 
         {/* Timestamp */}
-        <span className="text-xs text-dark-500 mt-1 px-1">
+        <span className="text-xs text-dark-400 mt-1.5 px-1">
           {formatTime(message.timestamp)}
         </span>
       </div>
